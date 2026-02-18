@@ -1,66 +1,865 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shipkasa — Ship Faster. Ship Smarter.</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    /* ─── RESET & ROOT ─────────────────────────────────────────── */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --bg:        #050508;
-      --bg-2:      #08080f;
-      --bg-card:   #0d0d18;
-      --surface:   #111128;
-      --border:    rgba(16, 56, 254, 0.07);
-      --accent:    #4b2bff;
-      --accent-2:  #1c77ff;
-      --accent-3:  #7c3aed;
-      --glow:      rgba(43, 174, 255, 0.18);
-      --text:      #f0f0f8;
-      --muted:     rgba(240,240,248,0.45);
-      --font-h:    'Syne', sans-serif;
-      --font-b:    'DM Sans', sans-serif;
-      --font-m:    'Space Mono', monospace;
-      --r:         16px;
-      --r-lg:      28px;
-    }
-    html { scroll-behavior: smooth; overflow-x: hidden; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-b);
-      overflow-x: hidden;
-      cursor: none;
-    }
-    ::selection { background: var(--accent); color: #fff; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shipkasa — Ship Faster. Ship Smarter.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#03060f;--bg-2:#050a18;--bg-card:#080e20;--surface:#0c1428;
+  --border:rgba(100,180,255,0.09);
+  --accent:#38bdf8;--accent-2:#7dd3fc;--accent-3:#0ea5e9;--accent-4:#bae6fd;
+  --glow:rgba(56,189,248,0.18);--text:#eef4ff;--muted:rgba(200,220,255,0.48);
+  --font-h:'Poppins',sans-serif;--font-b:'Poppins',sans-serif;--font-m:'Poppins',monospace;
+  --r:14px;--r-lg:24px;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);overflow-x:hidden;cursor:none}
+::selection{background:var(--accent);color:#03060f}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
 
-    /* ─── CUSTOM CURSOR ────────────────────────────────────────── */
-    #cursor {
-      position: fixed; top: 0; left: 0; z-index: 9999;
-      pointer-events: none;
-    }
-    #cursor .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--accent);
-      position: absolute; transform: translate(-50%,-50%);
-      transition: transform .1s, background .2s;
-    }
-    #cursor .ring {
-      width: 40px; height: 40px; border-radius: 50%;
-      border: 1.5px solid rgba(43, 181, 255, 0.55);
-      position: absolute; transform: translate(-50%,-50%);
-      transition: width .35s cubic-bezier(.4,0,.2,1), height .35s cubic-bezier(.4,0,.2,1),
-                  transform .12s, border-color .2s;
-    }
-    body:has(a:hover) #cursor .ring,
-    body:has(button:hover) #cursor .ring {
-      width: 64px; height: 64px;
-      border-color: var(--accent);
-    }
+/* NOISE */
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px}
+
+/* CURSOR */
+#cursor{position:fixed;top:0;left:0;z-index:9999;pointer-events:none}
+#cursor .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);position:absolute;transform:translate(-50%,-50%)}
+#cursor .ring{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(56,189,248,.48);position:absolute;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .2s}
+body:has(a:hover) #cursor .ring,body:has(button:hover) #cursor .ring{width:56px;height:56px;border-color:var(--accent)}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;z-index:2000;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width .06s linear}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;transition:background .4s,padding .4s}
+nav.scrolled{background:rgba(3,6,15,.9);backdrop-filter:blur(20px);padding:12px 48px;border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-h);font-size:1.55rem;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.nav-logo .accent{color:var(--accent)}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent-3));border-radius:8px;display:grid;place-items:center;font-size:.8rem;font-weight:700;color:#03060f;font-family:var(--font-m)}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.87rem;letter-spacing:.02em;position:relative;transition:color .2s}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-h);font-size:.84rem;font-weight:600;padding:10px 22px;border-radius:50px;border:1.5px solid var(--border);background:transparent;color:var(--muted);text-decoration:none;cursor:none;transition:all .25s}
+.btn:hover{color:var(--text);border-color:rgba(100,180,255,.22)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-3));border-color:transparent;color:#03060f!important;font-weight:700}
+.btn-primary:hover{filter:brightness(1.12);box-shadow:0 0 30px rgba(56,189,248,.38);transform:translateY(-1px)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:none;padding:6px;background:none;border:none}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{display:none;position:fixed;inset:0;z-index:999;background:rgba(3,6,15,.97);backdrop-filter:blur(24px);flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .35s}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{font-family:var(--font-h);font-size:1.85rem;font-weight:700;color:var(--muted);text-decoration:none;transition:color .2s,transform .2s}
+.mobile-menu a:hover{color:var(--accent);transform:translateX(8px)}
+
+/* ── HERO (SPLIT LAYOUT) ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:0;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 80% 80% at 20% 50%,rgba(56,189,248,.1) 0%,transparent 65%),radial-gradient(ellipse 50% 50% at 80% 20%,rgba(14,165,233,.07) 0%,transparent 60%)}
+.hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(56,189,248,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.025) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse 80% 80% at 30% 50%,black 0%,transparent 100%)}
+.hero-orbs{position:absolute;inset:0;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px)}
+.orb-1{width:480px;height:480px;background:radial-gradient(circle,rgba(56,189,248,.11),transparent 70%);top:-180px;left:-100px;animation:orbFloat1 14s ease-in-out infinite}
+.orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(14,165,233,.09),transparent 70%);bottom:10%;right:30%;animation:orbFloat2 11s ease-in-out infinite}
+.orb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(125,211,252,.07),transparent 70%);top:30%;left:40%;animation:orbFloat2 15s ease-in-out infinite;animation-delay:-6s}
+@keyframes orbFloat1{0%,100%{transform:translateY(0)}50%{transform:translateY(-45px)}}
+@keyframes orbFloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-32px)}}
+
+/* HERO INNER SPLIT */
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;padding:120px 48px 80px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;z-index:2}
+.hero-left{}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);padding:6px 16px 6px 8px;border-radius:50px;font-size:.7rem;font-weight:600;color:var(--accent);letter-spacing:.08em;margin-bottom:22px;animation:fadeUp .7s both}
+.dot-pulse{width:7px;height:7px;background:var(--accent);border-radius:50%;position:relative;flex-shrink:0}
+.dot-pulse::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--accent);animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.8);opacity:1}100%{transform:scale(2.2);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.hero-title{font-weight:800;font-size:clamp(2.6rem,5.5vw,5.2rem);line-height:1.05;letter-spacing:-.025em;animation:fadeUp .7s .12s both}
+.hero-title .gradient-text{background:linear-gradient(135deg,var(--accent),var(--accent-4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1rem;line-height:1.75;color:var(--muted);margin-top:20px;max-width:460px;animation:fadeUp .7s .24s both}
+.hero-rating{display:flex;align-items:center;gap:10px;margin-top:20px;animation:fadeUp .7s .34s both}
+.hero-stars{display:flex;gap:3px}
+.hero-stars span{font-size:1.1rem;color:#38bdf8}
+.hero-rating-text{font-size:.82rem;color:var(--muted);font-weight:500}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;animation:fadeUp .7s .44s both}
+.btn-hero{font-size:.93rem;padding:13px 30px}
+.hero-trust{display:flex;align-items:center;gap:10px;margin-top:28px;animation:fadeUp .7s .54s both}
+.hero-trust-text{font-size:.78rem;color:var(--muted);font-weight:500}
+.hero-trust-avatars{display:flex}
+.hero-trust-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;display:grid;place-items:center;font-size:.62rem;font-weight:700;color:#fff}
+.hero-trust-avatars .ta1{background:linear-gradient(135deg,#38bdf8,#0ea5e9);margin-left:0}
+.hero-trust-avatars .ta2{background:linear-gradient(135deg,#7dd3fc,#38bdf8)}
+.hero-trust-avatars .ta3{background:linear-gradient(135deg,#0ea5e9,#0284c7)}
+.hero-trust-avatars .ta4{background:linear-gradient(135deg,#bae6fd,#7dd3fc);color:#03060f}
+
+/* HERO RIGHT — photo slider with floating badges */
+.hero-right{position:relative;height:560px;display:flex;align-items:center;justify-content:center}
+.hero-photo-slider{position:relative;width:100%;height:100%;border-radius:28px;overflow:hidden}
+.hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1s cubic-bezier(.4,0,.2,1)}
+.hero-photo-slide.active{opacity:1}
+.hero-photo-slide img{width:100%;height:100%;object-fit:cover;object-position:center top}
+/* photo overlay gradient to blend with dark bg */
+.hero-photo-slide::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(3,6,15,.55) 0%,transparent 40%),linear-gradient(to top,rgba(3,6,15,.4) 0%,transparent 50%)}
+/* diagonal clip like screenshot */
+.hero-photo-slider::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,var(--bg) 0%,transparent 18%)}
+
+/* floating carrier badges */
+.carrier-badge{position:absolute;z-index:10;background:rgba(8,14,32,.88);backdrop-filter:blur(16px);border:1px solid rgba(56,189,248,.18);border-radius:14px;padding:10px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:badgeFloat 8s ease-in-out infinite}
+.carrier-badge .cb-mark{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;font-family:inherit;letter-spacing:-.02em}
+.carrier-badge .cb-name{font-size:.82rem;font-weight:600;color:var(--text);white-space:nowrap}
+.carrier-badge .cb-sub{font-size:.7rem;color:var(--muted);margin-top:1px}
+.cb-dhl{top:12%;right:-18px;animation-delay:0s;animation-duration:7s}
+.cb-fedex{bottom:32%;left:-22px;animation-delay:-2.5s;animation-duration:9s}
+.cb-ups{top:44%;right:-18px;animation-delay:-4s;animation-duration:8s}
+.cb-usps{bottom:10%;right:10%;animation-delay:-1.5s;animation-duration:10s}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* photo slider dots */
+.photo-dots{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:12}
+.photo-dot{width:6px;height:6px;border-radius:50%;background:rgba(56,189,248,.3);border:none;cursor:none;transition:background .3s,transform .3s}
+.photo-dot.active{background:var(--accent);transform:scale(1.4)}
+
+/* hero stats below */
+.hero-stats{display:flex;margin-top:0;position:relative;z-index:2;border:1px solid var(--border);border-radius:var(--r-lg);background:rgba(255,255,255,.02);backdrop-filter:blur(10px);overflow:hidden;width:100%;max-width:600px;animation:fadeUp .7s .65s both}
+.stat{padding:20px 24px;text-align:center;border-right:1px solid var(--border);flex:1;transition:background .3s}
+.stat:last-child{border-right:none}
+.stat:hover{background:rgba(56,189,248,.04)}
+.stat-num{font-size:1.9rem;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.03em}
+.accent-n{color:var(--accent)}
+.stat-label{font-size:.73rem;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+.hero-scroll-hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);font-size:.64rem;letter-spacing:.12em;font-weight:600;z-index:2;animation:fadeUp .7s .9s both}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(56,189,248,.6),transparent);animation:scrollPulse 2.2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.5);opacity:.4}}
+
+.hero-stats{display:flex;margin-top:36px;position:relative;z-index:2;animation:fadeUp .7s .65s both;border:1px solid var(--border);border-radius:var(--r-lg);background:rgba(255,255,255,.02);backdrop-filter:blur(10px);overflow:hidden;width:100%;max-width:600px}
+.stat{padding:20px 24px;text-align:center;border-right:1px solid var(--border);flex:1;transition:background .3s}
+.stat:last-child{border-right:none}
+.stat:hover{background:rgba(56,189,248,.04)}
+.stat-num{font-family:var(--font-h);font-size:1.9rem;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.03em}
+.accent-n{color:var(--accent)}
+.stat-label{font-size:.73rem;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.hero-scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);font-family:var(--font-m);font-size:.66rem;letter-spacing:.1em;z-index:2;animation:fadeUp .7s .9s both}
+.scroll-line{width:1px;height:42px;background:linear-gradient(to bottom,rgba(56,189,248,.6),transparent);animation:scrollPulse 2.2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.5);opacity:.4}}
+
+/* ── PARTNERS ── */
+#partners{padding:52px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.partners-label{text-align:center;font-family:var(--font-m);font-size:.69rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:28px}
+.marquee-wrapper{display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 12%,black 88%,transparent)}
+.marquee-track{display:flex;gap:14px;align-items:center;animation:marquee 28s linear infinite;flex-shrink:0}
+.marquee-wrapper:hover .marquee-track{animation-play-state:paused}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.partner-logo{display:flex;align-items:center;gap:9px;padding:11px 20px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg-card);white-space:nowrap;flex-shrink:0;transition:border-color .3s,background .3s,transform .3s;cursor:none}
+.partner-logo:hover{border-color:rgba(56,189,248,.28);background:rgba(56,189,248,.04);transform:translateY(-3px)}
+.logo-mark{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;font-size:.68rem;font-weight:700;color:#fff;font-family:var(--font-m);flex-shrink:0}
+.logo-name{font-family:var(--font-h);font-size:.84rem;font-weight:600;color:var(--muted)}
+
+/* ── SHARED ── */
+.section-inner{max-width:1200px;margin:0 auto;padding:96px 48px}
+.section-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-m);font-size:.69rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+.section-tag::before{content:'';display:block;width:18px;height:1px;background:var(--accent)}
+.section-title{font-family:var(--font-h);font-size:clamp(1.9rem,3.8vw,3.2rem);font-weight:800;letter-spacing:-.03em;line-height:1.08}
+.section-sub{font-size:.97rem;color:var(--muted);line-height:1.77;margin-top:14px;max-width:500px}
+
+/* ── FEATURES ── */
+#features{background:var(--bg-2)}
+#features .section-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.features-left{position:sticky;top:110px}
+
+/* features image slider — slide from right */
+.feat-slider-wrap{margin-top:32px;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);background:var(--bg-card);position:relative}
+.feat-slides{position:relative;height:260px}
+.feat-sl{position:absolute;inset:0;opacity:0;transform:translateX(32px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1)}
+.feat-sl.active{opacity:1;transform:translateX(0)}
+.feat-sl-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;gap:14px;text-align:center}
+.feat-sl-icon{font-size:2.6rem;filter:drop-shadow(0 0 14px rgba(56,189,248,.42))}
+.feat-sl-title{font-family:var(--font-h);font-size:1.08rem;font-weight:700}
+.feat-sl-desc{font-size:.83rem;color:var(--muted);line-height:1.64;max-width:280px}
+.feat-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(56,189,248,.08)}
+.feat-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width 3s linear}
+
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border)}
+.feat-card{background:var(--bg-card);padding:26px 22px;position:relative;overflow:hidden;transition:background .3s}
+.feat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top left,rgba(56,189,248,.07),transparent 70%);opacity:0;transition:opacity .4s}
+.feat-card:hover{background:#0a1228}
+.feat-card:hover::before{opacity:1}
+.feat-icon{width:40px;height:40px;border-radius:10px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.18);display:grid;place-items:center;margin-bottom:14px;font-size:1.1rem;transition:background .3s,transform .3s}
+.feat-card:hover .feat-icon{background:rgba(56,189,248,.2);transform:scale(1.08) rotate(-3deg)}
+.feat-card h3{font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:7px;letter-spacing:-.01em}
+.feat-card p{font-size:.82rem;color:var(--muted);line-height:1.62}
+.feat-card.wide{grid-column:span 2}
+
+/* ── HOW IT WORKS ── */
+#how .section-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.steps{display:flex;flex-direction:column;gap:0;margin-top:32px}
+.step{display:flex;gap:16px;padding:20px 0;border-bottom:1px solid var(--border);cursor:none;transition:padding-left .25s}
+.step:last-child{border-bottom:none}
+.step.active-step{padding-left:10px}
+.step-num{font-family:var(--font-h);font-size:1.7rem;font-weight:800;color:rgba(56,189,248,.14);line-height:1;flex-shrink:0;min-width:34px;transition:color .3s}
+.step.active-step .step-num{color:var(--accent)}
+.step-body h3{font-family:var(--font-h);font-size:.98rem;font-weight:700;margin-bottom:5px;letter-spacing:-.01em}
+.step-body p{font-size:.83rem;color:var(--muted);line-height:1.64}
+
+/* how slider — zoom fade */
+.how-slider-wrap{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);background:var(--bg-card);position:relative}
+.how-slides{position:relative;height:380px}
+.how-sl{position:absolute;inset:0;opacity:0;transform:scale(1.05);transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1)}
+.how-sl.active{opacity:1;transform:scale(1)}
+.how-sl-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;gap:18px;text-align:center}
+.how-sl-num{font-family:var(--font-h);font-size:3.8rem;font-weight:800;color:rgba(56,189,248,.1);line-height:1}
+.how-sl-icon{font-size:2.8rem;filter:drop-shadow(0 0 18px rgba(56,189,248,.5));margin-top:-18px}
+.how-sl-title{font-family:var(--font-h);font-size:1.18rem;font-weight:700;color:var(--text)}
+.how-sl-desc{font-size:.85rem;color:var(--muted);line-height:1.68;max-width:270px}
+.how-nav{display:flex;gap:8px;margin-top:12px;justify-content:center;padding-bottom:14px}
+.how-nav-btn{width:30px;height:3px;border-radius:4px;background:rgba(56,189,248,.15);border:none;cursor:none;transition:background .3s,width .3s}
+.how-nav-btn.active{background:var(--accent);width:46px}
+
+/* ── CTA BANNER ── */
+#cta-banner{margin:0 48px;border-radius:var(--r-lg);background:linear-gradient(135deg,rgba(56,189,248,.11) 0%,rgba(14,165,233,.08) 100%);border:1px solid rgba(56,189,248,.18);overflow:hidden;position:relative}
+.banner-inner{display:flex;align-items:center;justify-content:space-between;gap:36px;padding:60px 56px}
+#cta-banner h2{font-family:var(--font-h);font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+#cta-banner p{font-size:.92rem;color:var(--muted);margin-top:9px}
+.banner-glow{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.09),transparent 70%);pointer-events:none}
+.banner-cta-btns{display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0}
+
+/* ── PRICING ── */
+#pricing{background:var(--bg-2)}
+#pricing .section-inner{text-align:center}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.price-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:34px 26px;text-align:left;position:relative;transition:border-color .3s,transform .35s,box-shadow .35s;overflow:hidden}
+.price-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:scaleX(0);transform-origin:center;transition:transform .4s}
+.price-card:hover{border-color:rgba(56,189,248,.2);transform:translateY(-6px);box-shadow:0 22px 56px rgba(0,0,0,.5)}
+.price-card:hover::before{transform:scaleX(1)}
+.price-card.popular{border-color:rgba(56,189,248,.32);background:linear-gradient(160deg,rgba(56,189,248,.06) 0%,var(--bg-card) 55%)}
+.price-card.popular::before{transform:scaleX(1)}
+.popular-badge{position:absolute;top:16px;right:16px;background:linear-gradient(135deg,var(--accent),var(--accent-3));color:#03060f;font-family:var(--font-m);font-size:.66rem;letter-spacing:.06em;padding:4px 10px;border-radius:50px;font-weight:700}
+.price-plan{font-family:var(--font-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.price-amount{font-family:var(--font-h);font-size:2.7rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+.price-amount sup{font-size:1.1rem;vertical-align:top;margin-top:.4rem}
+.price-amount sub{font-size:.86rem;color:var(--muted);font-weight:400}
+.price-desc{font-size:.83rem;color:var(--muted);margin:9px 0 22px;line-height:1.62}
+.price-divider{height:1px;background:var(--border);margin-bottom:22px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+.price-features li{display:flex;align-items:flex-start;gap:8px;font-size:.84rem;color:var(--muted);line-height:1.5}
+.price-features li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
+.price-features li.no{color:rgba(200,220,255,.2)}
+.price-features li.no::before{content:'×';color:rgba(255,255,255,.15)}
+
+/* ── TESTIMONIALS ── */
+#testimonials .section-inner{text-align:center}
+
+/* testi big slider — slide up */
+.testi-big-wrap{margin-top:48px;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);background:var(--bg-card);position:relative}
+.testi-slides{position:relative;height:260px}
+.testi-sl{position:absolute;inset:0;opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
+.testi-sl.active{opacity:1;transform:translateY(0)}
+.testi-sl-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 44px;gap:14px}
+.testi-sl-stars{color:var(--accent-2);font-size:.88rem;letter-spacing:2px}
+.testi-sl-quote{font-size:1rem;color:var(--text);line-height:1.75;font-style:italic;max-width:560px;text-align:center}
+.testi-sl-who{display:flex;align-items:center;gap:11px}
+.testi-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-h);font-weight:700;font-size:.83rem;color:#fff;flex-shrink:0}
+.testi-nm{font-family:var(--font-h);font-weight:600;font-size:.86rem;text-align:left}
+.testi-rl{font-size:.75rem;color:var(--muted)}
+.testi-nav{display:flex;justify-content:center;gap:7px;margin:16px 0 32px}
+.testi-dot{width:7px;height:7px;border-radius:50%;background:rgba(56,189,248,.22);border:none;cursor:none;transition:background .3s,transform .3s}
+.testi-dot.active{background:var(--accent);transform:scale(1.35)}
+
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.testi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;text-align:left;transition:border-color .3s,transform .3s,box-shadow .3s}
+.testi-card:hover{border-color:rgba(56,189,248,.2);transform:translateY(-5px);box-shadow:0 18px 46px rgba(0,0,0,.4)}
+.testi-stars{color:var(--accent-2);font-size:.83rem;margin-bottom:11px;letter-spacing:2px}
+.testi-text{font-size:.86rem;color:var(--muted);line-height:1.72;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* ── FOOTER ── */
+footer{background:#020409;border-top:1px solid var(--border)}
+.footer-inner{max-width:1200px;margin:0 auto;padding:68px 48px 34px}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid var(--border)}
+.footer-brand p{font-size:.87rem;color:var(--muted);margin-top:13px;line-height:1.7;max-width:256px}
+.footer-newsletter{margin-top:22px;display:flex;gap:0}
+.footer-newsletter input{flex:1;background:var(--surface);border:1px solid var(--border);border-right:none;padding:9px 14px;border-radius:var(--r) 0 0 var(--r);color:var(--text);font-family:var(--font-b);font-size:.83rem;outline:none;transition:border-color .2s}
+.footer-newsletter input::placeholder{color:var(--muted)}
+.footer-newsletter input:focus{border-color:rgba(56,189,248,.32)}
+.footer-newsletter button{background:linear-gradient(135deg,var(--accent),var(--accent-3));border:none;padding:9px 16px;border-radius:0 var(--r) var(--r) 0;color:#03060f;font-family:var(--font-h);font-size:.8rem;font-weight:700;cursor:none;transition:filter .2s}
+.footer-newsletter button:hover{filter:brightness(1.1)}
+.footer-col h4{font-family:var(--font-h);font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text);margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-col a:hover{color:var(--accent)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:26px}
+.footer-copy{font-size:.79rem;color:var(--muted)}
+.footer-socials{display:flex;gap:9px}
+.social-btn{width:33px;height:33px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;color:var(--muted);text-decoration:none;font-size:.76rem;transition:background .2s,border-color .2s,color .2s,transform .2s}
+.social-btn:hover{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.3);color:var(--accent);transform:translateY(-2px)}
+
+/* ── SCROLL REVEAL ── */
+[data-reveal]{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+[data-reveal].revealed{opacity:1;transform:none}
+[data-reveal="left"]{transform:translateX(-34px)}[data-reveal="right"]{transform:translateX(34px)}
+[data-reveal="left"].revealed,[data-reveal="right"].revealed{transform:none}
+[data-delay="1"]{transition-delay:.1s}[data-delay="2"]{transition-delay:.2s}[data-delay="3"]{transition-delay:.3s}
+[data-delay="4"]{transition-delay:.4s}[data-delay="5"]{transition-delay:.5s}[data-delay="6"]{transition-delay:.6s}
+
+/* ── MISC ── */
+.sparkle{position:absolute;width:5px;height:5px;background:var(--accent-2);border-radius:50%;pointer-events:none;animation:sparkleAnim .7s forwards}
+@keyframes sparkleAnim{0%{transform:scale(0) translate(0,0);opacity:1}100%{transform:scale(1) translate(var(--tx),var(--ty));opacity:0}}
+.magnetic{transition:transform .25s cubic-bezier(.2,.8,.4,1)}
+.count-num{display:inline-block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;gap:40px;padding:110px 32px 70px;text-align:center}
+  .hero-left{align-items:center;display:flex;flex-direction:column}
+  .hero-sub{max-width:100%}
+  .hero-right{height:420px;width:100%;max-width:560px;margin:0 auto}
+  .cb-dhl{top:8%;right:0}
+  .cb-ups{top:42%;right:0}
+  .cb-fedex{bottom:28%;left:0}
+  .cb-usps{bottom:6%;right:8%}
+  #features .section-inner{grid-template-columns:1fr;gap:44px}
+  .features-left{position:static}
+  .features-grid{grid-template-columns:1fr 1fr}
+  #how .section-inner{grid-template-columns:1fr;gap:40px}
+  .how-slider-wrap{max-width:460px;margin:0 auto}
+  .pricing-grid{grid-template-columns:1fr 1fr}
+  .pricing-grid .price-card:last-child{grid-column:span 2;max-width:360px;margin:0 auto;width:100%}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr 1fr}
+  #cta-banner{margin:0 24px}
+}
+@media(max-width:768px){
+  nav{padding:13px 18px}nav.scrolled{padding:10px 18px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .mobile-menu{display:flex}
+  .section-inner{padding:60px 18px}
+  .hero-inner{grid-template-columns:1fr;padding:100px 20px 60px;gap:36px;text-align:center}
+  .hero-left{display:flex;flex-direction:column;align-items:center}
+  .hero-title{font-size:clamp(2.2rem,8vw,3.2rem)}
+  .hero-sub{max-width:100%}
+  .hero-right{height:340px;width:100%}
+  .carrier-badge{display:none}
+  .hero-photo-slider{border-radius:18px}
+  .hero-stats{flex-direction:column;max-width:320px;margin:0 auto}
+  .stat{border-right:none;border-bottom:1px solid var(--border);padding:14px 18px}
+  .stat:last-child{border-bottom:none}
+  .feat-slides{height:210px}
+  .how-slides{height:300px}
+  .testi-slides{height:290px}
+  .testi-sl-inner{padding:22px 18px}
+  .testi-sl-quote{font-size:.9rem}
+  .features-grid{grid-template-columns:1fr}
+  .feat-card.wide{grid-column:auto}
+  .pricing-grid{grid-template-columns:1fr}
+  .pricing-grid .price-card:last-child{grid-column:auto;max-width:100%}
+  .testi-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr;gap:32px}
+  .footer-newsletter{flex-direction:column}
+  .footer-newsletter input{border-right:1px solid var(--border);border-radius:var(--r)}
+  .footer-newsletter button{border-radius:var(--r);padding:10px}
+  #cta-banner{margin:0 14px}
+  .banner-inner{flex-direction:column;text-align:center;padding:36px 22px}
+  .banner-cta-btns{justify-content:center}
+  .hero-cta{flex-direction:column;align-items:center}
+  .hero-cta .btn{width:100%;max-width:290px;justify-content:center}
+  .hero-stats{margin:28px auto 0}
+  .floating-tags{display:none}
+}
+@media(max-width:480px){
+  .hero-title{font-size:2.2rem}
+  .stat-num{font-size:1.65rem}
+  .section-title{font-size:1.75rem}
+  .hero-slides{height:200px}
+  .feat-slides{height:190px}
+  .how-slides{height:270px}
+  .testi-slides{height:310px}
+  .price-card{padding:26px 18px}
+  .partner-logo{padding:9px 15px}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="noise"></div>
+<div id="cursor"><div class="dot"></div><div class="ring"></div></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="closeMobile()">Features</a>
+  <a href="#how" onclick="closeMobile()">How It Works</a>
+  <a href="#partners" onclick="closeMobile()">Partners</a>
+  <a href="#pricing" onclick="closeMobile()">Pricing</a>
+  <a href="#testimonials" onclick="closeMobile()">Reviews</a>
+  <div style="margin-top:14px"><a href="#" class="btn btn-primary btn-hero">Get Started Free →</a></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo"><div class="logo-icon">SK</div>Ship<span class="accent">kasa</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#partners">Partners</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="#" class="btn">Log In</a>
+    <a href="#" class="btn btn-primary magnetic">Start Free →</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+  <div class="hero-inner">
+    <!-- LEFT: text -->
+    <div class="hero-left">
+      <div class="hero-badge"><div class="dot-pulse"></div>SHIPPING LABEL SOFTWARE</div>
+
+      <h1 class="hero-title">
+        Smart Shipping<br>
+        <span class="gradient-text">Starts Here</span>
+      </h1>
+
+      <p class="hero-sub">Connect your carriers and marketplaces, choose your plan, and you are ready to ship. No complex set-up. Just a fast path to smarter fulfillment.</p>
+
+      <div class="hero-rating">
+        <div class="hero-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <div class="hero-rating-text">4.9/5 from 2,400+ reviews</div>
+      </div>
+
+      <div class="hero-cta">
+        <a href="#" class="btn btn-primary btn-hero magnetic sparkle-container">Get Started Free</a>
+        <a href="#how" class="btn btn-hero">See How It Works ↓</a>
+      </div>
+
+      <div class="hero-trust">
+        <div class="hero-trust-avatars">
+          <div class="hero-trust-avatar ta1">RK</div>
+          <div class="hero-trust-avatar ta2">PS</div>
+          <div class="hero-trust-avatar ta3">AM</div>
+          <div class="hero-trust-avatar ta4">VS</div>
+        </div>
+        <div class="hero-trust-text">10,000+ businesses already shipping smarter</div>
+      </div>
+
+      <div class="hero-stats" style="margin-top:36px">
+        <div class="stat"><div class="stat-num"><span class="count-num" data-target="12">0</span><span class="accent-n">M+</span></div><div class="stat-label">Packages Shipped</div></div>
+        <div class="stat"><div class="stat-num"><span class="count-num" data-target="150">0</span><span class="accent-n">+</span></div><div class="stat-label">Countries</div></div>
+        <div class="stat"><div class="stat-num"><span class="count-num" data-target="40">0</span><span class="accent-n">%</span></div><div class="stat-label">Cost Savings</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: photo slider + floating carrier badges -->
+    <div class="hero-right">
+      <!-- Photo slider — 3 warehouse/shipping photos, 5s each -->
+      <div class="hero-photo-slider" id="heroPhotoSlider">
+
+        <!-- Photo 1 — warehouse worker with tablet (Unsplash) -->
+        <div class="hero-photo-slide active">
+          <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=700&q=80&auto=format&fit=crop" alt="Warehouse logistics professional with tablet" loading="eager"/>
+        </div>
+
+        <!-- Photo 2 — delivery/shipping boxes -->
+        <div class="hero-photo-slide">
+          <img src="https://images.unsplash.com/photo-1601598851547-4302969d0614?w=700&q=80&auto=format&fit=crop" alt="Shipping and delivery boxes in warehouse" loading="lazy"/>
+        </div>
+
+        <!-- Photo 3 — logistics worker scanning packages -->
+        <div class="hero-photo-slide">
+          <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=700&q=80&auto=format&fit=crop" alt="Logistics worker scanning packages" loading="lazy"/>
+        </div>
+
+        <div class="photo-dots" id="photoDots">
+          <button class="photo-dot active" onclick="goPhotoSlide(0)"></button>
+          <button class="photo-dot" onclick="goPhotoSlide(1)"></button>
+          <button class="photo-dot" onclick="goPhotoSlide(2)"></button>
+        </div>
+      </div>
+
+      <!-- Floating carrier badges -->
+      <div class="carrier-badge cb-dhl">
+        <div class="cb-mark" style="background:#FFCC00;color:#D40511;font-size:.82rem;font-weight:900">DHL</div>
+        <div><div class="cb-name">DHL Express</div><div class="cb-sub">2-day delivery</div></div>
+      </div>
+
+      <div class="carrier-badge cb-fedex">
+        <div class="cb-mark" style="background:#4d148c">
+          <svg width="28" height="12" viewBox="0 0 60 24" fill="none"><text x="0" y="18" font-size="18" font-weight="900" fill="#FF6600" font-family="Arial">Fed</text><text x="30" y="18" font-size="18" font-weight="900" fill="#fff" font-family="Arial">Ex</text></svg>
+        </div>
+        <div><div class="cb-name">FedEx Priority</div><div class="cb-sub">1-day delivery</div></div>
+      </div>
+
+      <div class="carrier-badge cb-ups">
+        <div class="cb-mark" style="background:#351c15">
+          <svg width="22" height="22" viewBox="0 0 40 40"><path d="M20 4C11.2 4 4 11.2 4 20v8c0 4.4 7.2 8 16 8s16-3.6 16-8V20C36 11.2 28.8 4 20 4z" fill="#FFB500"/><text x="9" y="26" font-size="13" font-weight="900" fill="#351c15" font-family="Arial">UPS</text></svg>
+        </div>
+        <div><div class="cb-name">UPS Ground</div><div class="cb-sub">3-day delivery</div></div>
+      </div>
+
+      <div class="carrier-badge cb-usps">
+        <div class="cb-mark" style="background:#004B87;font-size:.65rem;font-weight:800;letter-spacing:-.03em">USPS</div>
+        <div><div class="cb-name">USPS Priority</div><div class="cb-sub">2-3 day delivery</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">SCROLL<div class="scroll-line"></div></div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <div class="partners-label">Trusted by 10,000+ businesses worldwide</div>
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      <div class="partner-logo"><div class="logo-mark" style="background:#ff6b2b">AM</div><div class="logo-name">Amazon</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#5865f2">SH</div><div class="logo-name">Shopify</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#00c2a8">WO</div><div class="logo-name">WooCommerce</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#f6b800">DH</div><div class="logo-name">DHL Express</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#4f46e5">FX</div><div class="logo-name">FedEx</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#7c3aed">UP</div><div class="logo-name">UPS</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#059669">ET</div><div class="logo-name">Etsy Pro</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#db2777">WM</div><div class="logo-name">Walmart</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#0ea5e9">PP</div><div class="logo-name">PayPal</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#ea580c">SQ</div><div class="logo-name">Square</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#16a34a">ST</div><div class="logo-name">Stripe</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#2563eb">FB</div><div class="logo-name">Meta Commerce</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#ff6b2b">AM</div><div class="logo-name">Amazon</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#5865f2">SH</div><div class="logo-name">Shopify</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#00c2a8">WO</div><div class="logo-name">WooCommerce</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#f6b800">DH</div><div class="logo-name">DHL Express</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#4f46e5">FX</div><div class="logo-name">FedEx</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#7c3aed">UP</div><div class="logo-name">UPS</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#059669">ET</div><div class="logo-name">Etsy Pro</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#db2777">WM</div><div class="logo-name">Walmart</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#0ea5e9">PP</div><div class="logo-name">PayPal</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#ea580c">SQ</div><div class="logo-name">Square</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#16a34a">ST</div><div class="logo-name">Stripe</div></div>
+      <div class="partner-logo"><div class="logo-mark" style="background:#2563eb">FB</div><div class="logo-name">Meta Commerce</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="features-left">
+      <div class="section-tag" data-reveal>Platform Features</div>
+      <h2 class="section-title" data-reveal data-delay="1">Everything you need<br>to ship at scale</h2>
+      <p class="section-sub" data-reveal data-delay="2">From real-time carrier comparison to automated label generation, Shipkasa handles every step of the fulfillment journey.</p>
+      <div style="margin-top:28px" data-reveal data-delay="3"><a href="#" class="btn btn-primary magnetic" style="font-size:.87rem;padding:11px 24px">Explore All Features →</a></div>
+
+      <!-- FEATURES SLIDER — slide from right -->
+      <div class="feat-slider-wrap" data-reveal data-delay="4">
+        <div class="feat-slides" id="featSlider">
+          <div class="feat-sl active"><div class="feat-sl-inner" style="background:linear-gradient(160deg,rgba(56,189,248,.04),transparent)"><div class="feat-sl-icon">🌐</div><div class="feat-sl-title">Multi-Carrier Network</div><div class="feat-sl-desc">Compare rates from 50+ carriers in real-time. Always auto-select the best price or speed.</div></div></div>
+          <div class="feat-sl"><div class="feat-sl-inner" style="background:linear-gradient(160deg,rgba(14,165,233,.04),transparent)"><div class="feat-sl-icon">📍</div><div class="feat-sl-title">Live GPS Tracking</div><div class="feat-sl-desc">End-to-end shipment visibility with branded tracking pages your customers will love.</div></div></div>
+          <div class="feat-sl"><div class="feat-sl-inner" style="background:linear-gradient(160deg,rgba(125,211,252,.04),transparent)"><div class="feat-sl-icon">🤖</div><div class="feat-sl-title">AI Route Optimizer</div><div class="feat-sl-desc">Machine learning models that analyze traffic and windows to suggest the perfect route.</div></div></div>
+        </div>
+        <div class="feat-bar"><div class="feat-bar-fill" id="featBarFill"></div></div>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feat-card" data-reveal data-delay="1"><div class="feat-icon">🌐</div><h3>Multi-Carrier Network</h3><p>Compare 50+ carrier rates in real-time. Auto-pick cheapest or fastest for every order.</p></div>
+      <div class="feat-card" data-reveal data-delay="2"><div class="feat-icon">📍</div><h3>Live GPS Tracking</h3><p>End-to-end visibility with branded tracking pages that reduce support tickets by 60%.</p></div>
+      <div class="feat-card" data-reveal data-delay="3"><div class="feat-icon">🤖</div><h3>AI Route Optimizer</h3><p>ML model analyzes traffic and delivery windows to suggest the perfect route every time.</p></div>
+      <div class="feat-card" data-reveal data-delay="4"><div class="feat-icon">📦</div><h3>Bulk Label Printing</h3><p>Generate and print thousands of labels in seconds. Works with any thermal printer.</p></div>
+      <div class="feat-card" data-reveal data-delay="5"><div class="feat-icon">🔄</div><h3>Returns Management</h3><p>Automate reverse logistics with self-service portals your customers will appreciate.</p></div>
+      <div class="feat-card" data-reveal data-delay="6"><div class="feat-icon">📊</div><h3>Analytics & Reports</h3><p>Deep insights into shipping spend, carrier performance, and delivery success rates.</p></div>
+      <div class="feat-card wide" data-reveal>
+        <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+          <div class="feat-icon" style="flex-shrink:0;width:46px;height:46px">🔌</div>
+          <div><h3>One-Click Integrations</h3><p>Connect Shopify, WooCommerce, Amazon, Etsy, Flipkart, Meesho and 40+ platforms in under a minute. Orders flow in automatically — no manual entry, no friction.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div>
+      <div class="section-tag" data-reveal>Process</div>
+      <h2 class="section-title" data-reveal data-delay="1">Up and running in<br>4 simple steps</h2>
+      <p class="section-sub" data-reveal data-delay="2">No technical skills needed. Connect your store and start shipping in under 10 minutes.</p>
+      <div class="steps" data-reveal data-delay="3">
+        <div class="step active-step" data-step="0"><div class="step-num">01</div><div class="step-body"><h3>Connect Your Store</h3><p>Link Shopify, WooCommerce, Amazon or any platform in one click. Orders sync automatically.</p></div></div>
+        <div class="step" data-step="1"><div class="step-num">02</div><div class="step-body"><h3>Compare & Select</h3><p>Live rates from 50+ carriers. Sort by price, speed, or reliability and pick the best instantly.</p></div></div>
+        <div class="step" data-step="2"><div class="step-num">03</div><div class="step-body"><h3>Generate Labels</h3><p>Auto-generate compliant labels in one click. Bulk print or email to your warehouse team.</p></div></div>
+        <div class="step" data-step="3"><div class="step-num">04</div><div class="step-body"><h3>Track & Delight</h3><p>Branded tracking links for customers. Get delivery confirmations and manage exceptions.</p></div></div>
+      </div>
+    </div>
+
+    <!-- HOW SLIDER — zoom fade -->
+    <div data-reveal="right">
+      <div class="how-slider-wrap">
+        <div class="how-slides" id="howSlider">
+          <div class="how-sl active"><div class="how-sl-inner" style="background:linear-gradient(180deg,rgba(56,189,248,.04),transparent)"><div class="how-sl-num">01</div><div class="how-sl-icon">🔗</div><div class="how-sl-title">Connect Your Store</div><div class="how-sl-desc">One-click integrations with 40+ platforms. Orders sync instantly with zero setup friction.</div></div></div>
+          <div class="how-sl"><div class="how-sl-inner" style="background:linear-gradient(180deg,rgba(14,165,233,.04),transparent)"><div class="how-sl-num">02</div><div class="how-sl-icon">⚖️</div><div class="how-sl-title">Compare & Select</div><div class="how-sl-desc">Live rate comparison across 50+ carriers. Price, speed, and reliability scores side by side.</div></div></div>
+          <div class="how-sl"><div class="how-sl-inner" style="background:linear-gradient(180deg,rgba(125,211,252,.04),transparent)"><div class="how-sl-num">03</div><div class="how-sl-icon">🏷️</div><div class="how-sl-title">Generate Labels</div><div class="how-sl-desc">Bulk generate compliant labels in seconds. Print directly or send to your warehouse floor.</div></div></div>
+          <div class="how-sl"><div class="how-sl-inner" style="background:linear-gradient(180deg,rgba(56,189,248,.04),transparent)"><div class="how-sl-num">04</div><div class="how-sl-icon">🎯</div><div class="how-sl-title">Track & Delight</div><div class="how-sl-desc">Branded tracking pages with automated alerts reduce customer support load by 60%.</div></div></div>
+        </div>
+        <div class="how-nav" id="howNav">
+          <button class="how-nav-btn active" onclick="goHowSlide(0)"></button>
+          <button class="how-nav-btn" onclick="goHowSlide(1)"></button>
+          <button class="how-nav-btn" onclick="goHowSlide(2)"></button>
+          <button class="how-nav-btn" onclick="goHowSlide(3)"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div id="cta-banner" data-reveal>
+  <div class="banner-glow"></div>
+  <div class="banner-inner">
+    <div><h2>Ready to cut shipping costs<br>by up to <span style="color:var(--accent)">40%</span>?</h2><p>Join 10,000+ businesses that ship smarter with Shipkasa.</p></div>
+    <div class="banner-cta-btns"><a href="#" class="btn btn-primary btn-hero magnetic">Start Free Trial</a><a href="#" class="btn btn-hero">Talk to Sales</a></div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-inner">
+    <div class="section-tag" data-reveal style="justify-content:center">Pricing</div>
+    <h2 class="section-title" data-reveal data-delay="1">Simple, transparent pricing</h2>
+    <p class="section-sub" data-reveal data-delay="2" style="margin:0 auto">No hidden fees. No per-label surprises. Flat plans that scale with you.</p>
+    <div class="pricing-grid">
+      <div class="price-card" data-reveal data-delay="1">
+        <div class="price-plan">Starter</div>
+        <div class="price-amount"><sup>₹</sup>0<sub>/mo</sub></div>
+        <div class="price-desc">Perfect for new sellers testing the waters. No credit card required.</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>Up to 100 shipments/month</li><li>3 carrier integrations</li><li>Basic tracking page</li><li>Email support</li>
+          <li class="no">Bulk label printing</li><li class="no">Analytics dashboard</li><li class="no">API access</li>
+        </ul>
+        <a href="#" class="btn" style="width:100%;justify-content:center">Get Started Free</a>
+      </div>
+      <div class="price-card popular" data-reveal data-delay="2">
+        <div class="popular-badge">POPULAR</div>
+        <div class="price-plan">Growth</div>
+        <div class="price-amount"><sup>₹</sup>2,499<sub>/mo</sub></div>
+        <div class="price-desc">For growing D2C brands shipping 100–2000 orders monthly.</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>Up to 2,000 shipments/month</li><li>All 50+ carrier integrations</li><li>Branded tracking & notifications</li>
+          <li>Bulk label printing</li><li>Analytics dashboard</li><li>Returns management portal</li>
+          <li class="no">Custom API access</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;justify-content:center">Start 14-Day Free Trial</a>
+      </div>
+      <div class="price-card" data-reveal data-delay="3">
+        <div class="price-plan">Enterprise</div>
+        <div class="price-amount" style="font-size:2rem">Custom</div>
+        <div class="price-desc">For high-volume operations shipping 2000+ orders. Tailored to your needs.</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>Unlimited shipments</li><li>Dedicated account manager</li><li>Custom API + webhooks</li>
+          <li>SLA-backed support 24/7</li><li>White-label tracking</li><li>AI route optimization</li><li>Custom carrier contracts</li>
+        </ul>
+        <a href="#" class="btn" style="width:100%;justify-content:center">Contact Sales →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="section-tag" data-reveal style="justify-content:center">Testimonials</div>
+    <h2 class="section-title" data-reveal data-delay="1">Loved by sellers worldwide</h2>
+    <p class="section-sub" data-reveal data-delay="2" style="margin:0 auto">Don't just take our word for it — here's what our customers say.</p>
+
+    <!-- TESTI SLIDER — slide up -->
+    <div class="testi-big-wrap" data-reveal data-delay="3">
+      <div class="testi-slides" id="testiSlider">
+        <div class="testi-sl active"><div class="testi-sl-inner"><div class="testi-sl-stars">★★★★★</div><p class="testi-sl-quote">"Shipkasa transformed how we handle fulfillment. We save around ₹80,000 a month on shipping alone. I genuinely recommend it to every D2C founder I meet."</p><div class="testi-sl-who"><div class="testi-av" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9)">RK</div><div><div class="testi-nm">Rahul Kapoor</div><div class="testi-rl">Founder, Krafft Mart · 4,200+ orders/mo</div></div></div></div></div>
+        <div class="testi-sl"><div class="testi-sl-inner"><div class="testi-sl-stars">★★★★★</div><p class="testi-sl-quote">"The branded tracking page alone dropped our customer complaints by 60%. People always know where their package is — that peace of mind is priceless."</p><div class="testi-sl-who"><div class="testi-av" style="background:linear-gradient(135deg,#7dd3fc,#38bdf8)">PS</div><div><div class="testi-nm">Priya Sharma</div><div class="testi-rl">COO, ZenNest India</div></div></div></div></div>
+        <div class="testi-sl"><div class="testi-sl-inner"><div class="testi-sl-stars">★★★★★</div><p class="testi-sl-quote">"Set up in 8 minutes flat. Connected our Shopify store and started shipping the same day. The experience is unlike anything I've ever used before."</p><div class="testi-sl-who"><div class="testi-av" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">AM</div><div><div class="testi-nm">Arjun Mehta</div><div class="testi-rl">Founder, GreenThread</div></div></div></div></div>
+      </div>
+    </div>
+    <div class="testi-nav" id="testiNav">
+      <button class="testi-dot active" onclick="goTestiSlide(0)"></button>
+      <button class="testi-dot" onclick="goTestiSlide(1)"></button>
+      <button class="testi-dot" onclick="goTestiSlide(2)"></button>
+    </div>
+
+    <div class="testi-grid">
+      <div class="testi-card" data-reveal data-delay="1"><div class="testi-stars">★★★★★</div><p class="testi-text">"Their returns portal is a game-changer. Customers self-initiate returns and our support tickets dropped massively overnight."</p><div class="testi-author"><div class="testi-av" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9);width:34px;height:34px">NJ</div><div><div style="font-family:var(--font-h);font-weight:600;font-size:.84rem">Neha Joshi</div><div class="testi-rl">Head of Ops, PinkCart</div></div></div></div>
+      <div class="testi-card" data-reveal data-delay="2"><div class="testi-stars">★★★★★</div><p class="testi-text">"Analytics are incredibly detailed. I can see exactly which carrier is under-performing and switch in real time — huge advantage."</p><div class="testi-author"><div class="testi-av" style="background:linear-gradient(135deg,#7dd3fc,#38bdf8);width:34px;height:34px">KD</div><div><div style="font-family:var(--font-h);font-weight:600;font-size:.84rem">Kiran Das</div><div class="testi-rl">Logistics Lead, TechPack</div></div></div></div>
+      <div class="testi-card" data-reveal data-delay="3"><div class="testi-stars">★★★★★</div><p class="testi-text">"Switched from our old tool and cut average shipping cost by 34% in the very first month. Absolutely incredible ROI for any business."</p><div class="testi-author"><div class="testi-av" style="background:linear-gradient(135deg,#bae6fd,#7dd3fc);width:34px;height:34px;color:#03060f">VS</div><div><div style="font-family:var(--font-h);font-weight:600;font-size:.84rem">Vikram Singh</div><div class="testi-rl">CEO, SnackBox India</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="font-size:1.35rem"><div class="logo-icon" style="width:30px;height:30px;font-size:.75rem">SK</div>Ship<span class="accent">kasa</span></a>
+        <p>The modern logistics platform for businesses that refuse to settle for slow and expensive shipping.</p>
+        <div class="footer-newsletter"><input type="email" placeholder="Your work email"/><button>Subscribe</button></div>
+      </div>
+      <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Features</a></li><li><a href="#">Pricing</a></li><li><a href="#">Integrations</a></li><li><a href="#">Changelog</a></li><li><a href="#">API Docs</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Press Kit</a></li><li><a href="#">Contact</a></li></ul></div>
+      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Status Page</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Security</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Shipkasa Technologies Pvt. Ltd. All rights reserved.</div>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Twitter">𝕏</a>
+        <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+        <a href="#" class="social-btn" aria-label="Instagram">ig</a>
+        <a href="#" class="social-btn" aria-label="YouTube">▶</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─ CURSOR ─ */
+const C=document.getElementById('cursor'),Cd=C.querySelector('.dot'),Cr=C.querySelector('.ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){Cd.style.left=mx+'px';Cd.style.top=my+'px';rx+=(mx-rx)*.13;ry+=(my-ry)*.13;Cr.style.left=rx+'px';Cr.style.top=ry+'px';requestAnimationFrame(loop)})();
+if('ontouchstart' in window){document.body.style.cursor='auto';C.style.display='none'}
+
+/* ─ PROGRESS ─ */
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('progress').style.width=(window.scrollY/h*100)+'%'},{passive:true});
+
+/* ─ NAV ─ */
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>40),{passive:true});
+
+/* ─ HAMBURGER ─ */
+const ham=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');mm.classList.toggle('open');document.body.style.overflow=mm.classList.contains('open')?'hidden':''});
+function closeMobile(){ham.classList.remove('open');mm.classList.remove('open');document.body.style.overflow=''}
+
+/* ─ REVEAL ─ */
+const revIO=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('revealed')}),{threshold:.1});
+document.querySelectorAll('[data-reveal]').forEach(el=>revIO.observe(el));
+
+/* ─ COUNTERS ─ */
+const cIO=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  const el=x.target,t=+el.dataset.target,s=performance.now();
+  (function go(n){const p=Math.min((n-s)/1600,1),v=1-Math.pow(1-p,3);el.textContent=Math.floor(v*t);if(p<1)requestAnimationFrame(go);else el.textContent=t})(s);
+  cIO.unobserve(el);
+}),{threshold:.5});
+document.querySelectorAll('.count-num').forEach(c=>cIO.observe(c));
+
+/* ─ PARALLAX ─ */
+const orbs=document.querySelectorAll('.orb');
+window.addEventListener('scroll',()=>{const y=window.scrollY;
+  orbs.forEach((o,i)=>o.style.transform=`translateY(${y*(0.09+i*.05)}px)`);
+},{passive:true});
+
+/* ══════════════════════════════════════
+   PHOTO SLIDER (HERO) — cross-fade, 5s
+══════════════════════════════════════ */
+let pIdx=0;const pTotal=3;let pTimer;
+function goPhotoSlide(n){
+  document.querySelectorAll('#heroPhotoSlider .hero-photo-slide').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.querySelectorAll('#photoDots .photo-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
+  pIdx=n;
+}
+pTimer=setInterval(()=>goPhotoSlide((pIdx+1)%pTotal),5000);
+const ps=document.getElementById('heroPhotoSlider');
+if(ps){ps.addEventListener('mouseenter',()=>clearInterval(pTimer));ps.addEventListener('mouseleave',()=>{pTimer=setInterval(()=>goPhotoSlide((pIdx+1)%pTotal),5000)})}
+
+/* ─ MAGNETIC ─ */
+document.querySelectorAll('.magnetic').forEach(b=>{
+  b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.27}px,${(e.clientY-r.top-r.height/2)*.27}px)`});
+  b.addEventListener('mouseleave',()=>b.style.transform='');
+});
+
+/* ─ SPARKLE ─ */
+document.querySelectorAll('.sparkle-container').forEach(el=>el.addEventListener('click',e=>{
+  for(let i=0;i<10;i++){const s=document.createElement('span');s.className='sparkle';s.style.left=e.offsetX+'px';s.style.top=e.offsetY+'px';const a=Math.random()*Math.PI*2,d=28+Math.random()*48;s.style.setProperty('--tx',Math.cos(a)*d+'px');s.style.setProperty('--ty',Math.sin(a)*d+'px');s.style.animationDelay=Math.random()*.15+'s';el.appendChild(s);s.addEventListener('animationend',()=>s.remove())}
+}));
+
+/* ─ TILT ─ */
+document.querySelectorAll('.feat-card,.price-card,.testi-card').forEach(c=>{
+  c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(600px) rotateX(${-y*5}deg) rotateY(${x*5}deg) translateY(-5px)`;c.style.transition='transform .1s'});
+  c.addEventListener('mouseleave',()=>{c.style.transform='';c.style.transition='transform .45s cubic-bezier(.2,.8,.4,1)'});
+});
+
+/* ─ HERO CHAR REPULSION ─ */
+document.querySelectorAll('.hero-title').forEach(title=>{
+  title.querySelectorAll('span:not(.gradient-text)').forEach(span=>{
+    if(!span.textContent.trim())return;
+    span.innerHTML=span.textContent.split('').map(c=>c===' '?'<span style="display:inline"> </span>':`<span class="hc" style="display:inline-block;transition:transform .18s,color .18s">${c}</span>`).join('');
+    span.addEventListener('mousemove',e=>{span.querySelectorAll('.hc').forEach(ch=>{const r=ch.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),dist=Math.sqrt(dx*dx+dy*dy),md=80;if(dist<md){const f=(md-dist)/md;ch.style.transform=`translate(${-dx*f*.27}px,${-dy*f*.27}px)`;ch.style.color=`hsl(${200+f*22},100%,${65+f*18}%)`}else{ch.style.transform='';ch.style.color=''}})});
+    span.addEventListener('mouseleave',()=>span.querySelectorAll('.hc').forEach(ch=>{ch.style.transform='';ch.style.color=''}));
+  });
+});
+
+/* ─ SMOOTH SCROLL ─ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}}));
+
+/* ══════════ SLIDERS ══════════ */
+
+/* FEATURES — slide from right, 3s */
+let fIdx=0;const fTotal=3;
+const fFill=document.getElementById('featBarFill');
+function goFeatSlide(n){
+  document.querySelectorAll('#featSlider .feat-sl').forEach((s,i)=>s.classList.toggle('active',i===n));
+  fIdx=n;
+  if(fFill){fFill.style.transition='none';fFill.style.width='0%';setTimeout(()=>{fFill.style.transition='width 3s linear';fFill.style.width='100%'},40)}
+}
+if(fFill){fFill.style.transition='width 3s linear';fFill.style.width='100%'}
+setInterval(()=>goFeatSlide((fIdx+1)%fTotal),3000);
+
+/* HOW — zoom fade, 3s, syncs with step list */
+let hIdx2=0;const hTotal2=4;let hTimer2;
+function goHowSlide(n){
+  document.querySelectorAll('#howSlider .how-sl').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.querySelectorAll('#howNav .how-nav-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  document.querySelectorAll('.steps .step').forEach((s,i)=>s.classList.toggle('active-step',i===n));
+  hIdx2=n;
+}
+hTimer2=setInterval(()=>goHowSlide((hIdx2+1)%hTotal2),3000);
+document.querySelectorAll('.steps .step').forEach((s,i)=>s.addEventListener('click',()=>{clearInterval(hTimer2);goHowSlide(i);hTimer2=setInterval(()=>goHowSlide((hIdx2+1)%hTotal2),3000)}));
+
+/* TESTI — slide up, 4s */
+let tIdx=0;const tTotal=3;let tTimer;
+function goTestiSlide(n){
+  document.querySelectorAll('#testiSlider .testi-sl').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.querySelectorAll('#testiNav .testi-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
+  tIdx=n;
+}
+tTimer=setInterval(()=>goTestiSlide((tIdx+1)%tTotal),4000);
+const ts=document.getElementById('testiSlider');
+ts.addEventListener('mouseenter',()=>clearInterval(tTimer));
+ts.addEventListener('mouseleave',()=>{tTimer=setInterval(()=>goTestiSlide((tIdx+1)%tTotal),4000)});
+
+console.log('%c🚢 Shipkasa','font-size:1.8rem;font-weight:900;color:#38bdf8;');
+</script>
+</body>
+</html>    }
 
     /* ─── NOISE OVERLAY ────────────────────────────────────────── */
     .noise {
@@ -1539,3 +2338,4 @@ console.log('%cShip faster. Scale smarter.', 'color:#888;font-size:.9rem;');
 </script>
 </body>
 </html>
+
